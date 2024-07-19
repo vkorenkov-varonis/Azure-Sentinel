@@ -113,10 +113,10 @@
                   "name": "Varonis"
                 },
                 "support": {
-                  "name": "Microsoft Corporation",
-                  "email": "support@microsoft.com",
-                  "tier": "Microsoft",
-                  "link": "https://support.microsoft.com"
+                  "name": "Varonis",
+                  "email": "",
+                  "tier": "Varonis",
+                  "link": "https://www.varonis.com/resources/support"
                 },
                 "dependencies": {
                   "operator": "AND",
@@ -254,7 +254,7 @@
                   },
                   "instructionSteps": [
                     {
-                      "description": ">**NOTE:** This connector uses Azure Functions to connect to Varonis DatAlert service to pull alerts into Azure Sentinel. This might result in additional data ingestion costs. See the [Azure Functions pricing page](https://azure.microsoft.com/pricing/details/functions/) for details."
+                      "description": ">**NOTE:** This connector uses Azure Functions to connect to Varonis DatAlert service to pull alerts into Microsoft Sentinel. This might result in additional data ingestion costs. See the [Azure Functions pricing page](https://azure.microsoft.com/pricing/details/functions/) for details."
                     },
                     {
                       "description": "**For Azure function and related services installation use:**\n\n [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Sentinel%2Fmaster%2FSolutions%2FVaronisSaaS%2FData%2520Connectors%2Fazuredeploy.json)"
@@ -312,10 +312,10 @@
                   "name": "Varonis"
                 },
                 "support": {
-                  "name": "Microsoft Corporation",
-                  "email": "support@microsoft.com",
-                  "tier": "Microsoft",
-                  "link": "https://support.microsoft.com"
+                  "name": "Varonis",
+                  "email": "",
+                  "tier": "Varonis",
+                  "link": "https://www.varonis.com/resources/support"
                 }
               }
             }
@@ -356,10 +356,10 @@
           "name": "Varonis"
         },
         "support": {
-          "name": "Microsoft Corporation",
-          "email": "support@microsoft.com",
-          "tier": "Microsoft",
-          "link": "https://support.microsoft.com"
+          "name": "Varonis",
+          "email": "",
+          "tier": "Varonis",
+          "link": "https://www.varonis.com/resources/support"
         }
       }
     },
@@ -452,7 +452,7 @@
           },
           "instructionSteps": [
             {
-              "description": ">**NOTE:** This connector uses Azure Functions to connect to Varonis DatAlert service to pull alerts into Azure Sentinel. This might result in additional data ingestion costs. See the [Azure Functions pricing page](https://azure.microsoft.com/pricing/details/functions/) for details."
+              "description": ">**NOTE:** This connector uses Azure Functions to connect to Varonis DatAlert service to pull alerts into Microsoft Sentinel. This might result in additional data ingestion costs. See the [Azure Functions pricing page](https://azure.microsoft.com/pricing/details/functions/) for details."
             },
             {
               "description": "**For Azure function and related services installation use:**\n\n [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Sentinel%2Fmaster%2FSolutions%2FVaronisSaaS%2FData%2520Connectors%2Fazuredeploy.json)"
@@ -502,8 +502,8 @@
         "kind": "Solution",
         "contentSchemaVersion": "3.0.0",
         "displayName": "VaronisSaaS",
-        "publisherDisplayName": "Microsoft Sentinel, Microsoft Corporation",
-        "descriptionHtml": "<p><strong>Note:</strong> <em>There may be <a href=\"https://aka.ms/sentinelsolutionsknownissues\">known issues</a> pertaining to this Solution, please refer to them before installing.</em></p>\n<p>The Varonis SaaS integration allows you to retrieve Varonis DatAlert alerts, create incident and pull activities related to the alerts for conducting investigations.</p>\n<p><strong>Data Connectors:</strong> 1, <strong>Workbooks:</strong> 1</p>\n<p><a href=\"https://aka.ms/azuresentinel\">Learn more about Microsoft Sentinel</a> | <a href=\"https://aka.ms/azuresentinelsolutionsdoc\">Learn more about Solutions</a></p>\n",
+        "publisherDisplayName": "Varonis",
+        "descriptionHtml": "<p><strong>Note:</strong> Please refer to the following before installing the solution:</p>\n<p>• Review the solution <a href=\"https://github.com/Azure/Azure-Sentinel/tree/master/Solutions/VaronisSaaS/ReleaseNotes.md\">Release Notes</a></p>\n<p>• There may be <a href=\"https://aka.ms/sentinelsolutionsknownissues\">known issues</a> pertaining to this Solution, please refer to them before installing.</p>\n<p>The Varonis SaaS integration allows you to retrieve Varonis DatAlert alerts, create incident and pull activities related to the alerts for conducting investigations.</p>\n<p><strong>Data Connectors:</strong> 1, <strong>Workbooks:</strong> 1</p>\n<p><a href=\"https://aka.ms/azuresentinel\">Learn more about Microsoft Sentinel</a> | <a href=\"https://aka.ms/azuresentinelsolutionsdoc\">Learn more about Solutions</a></p>\n",
         "contentKind": "Solution",
         "contentProductId": "[variables('_solutioncontentProductId')]",
         "id": "[variables('_solutioncontentProductId')]",
@@ -519,10 +519,9 @@
           "name": "Varonis"
         },
         "support": {
-          "name": "Microsoft Corporation",
-          "email": "support@microsoft.com",
-          "tier": "Microsoft",
-          "link": "https://support.microsoft.com"
+          "name": "Varonis",
+          "tier": "Varonis",
+          "link": "https://www.varonis.com/resources/support"
         },
         "dependencies": {
           "operator": "AND",

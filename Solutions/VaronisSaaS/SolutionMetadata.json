@@ -9,10 +9,10 @@
 		"verticals": []
 	},
 	"support": {
-	  "name": "Microsoft Corporation",
-	  "email": "support@microsoft.com",
-	  "tier": "Microsoft",
-	  "link": "https://support.microsoft.com"
+	  "name": "Varonis",
+	  "email": "",
+	  "tier": "Varonis",
+	  "link": "https://www.varonis.com/resources/support"
 	}
 }
 

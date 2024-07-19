@@ -82,7 +82,7 @@
   "instructionSteps": [
     {
       "title": "",
-      "description": ">**NOTE:** This connector uses Azure Functions to connect to Varonis DatAlert service to pull alerts into Azure Sentinel. This might result in additional data ingestion costs. See the [Azure Functions pricing page](https://azure.microsoft.com/pricing/details/functions/) for details."
+      "description": ">**NOTE:** This connector uses Azure Functions to connect to Varonis DatAlert service to pull alerts into Microsoft Sentinel. This might result in additional data ingestion costs. See the [Azure Functions pricing page](https://azure.microsoft.com/pricing/details/functions/) for details."
     },
     {
       "title": "",
