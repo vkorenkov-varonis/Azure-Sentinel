@@ -79,7 +79,7 @@ namespace Varonis.Sentinel.Functions
             }
             catch (Exception ex) 
             {
-                log.LogError($"{ex.Message} {ex.InnerException?.Message}");
+                log.LogError($"{ex.Message} | {ex.InnerException?.Message}", ex);
                 throw;
             }
         }

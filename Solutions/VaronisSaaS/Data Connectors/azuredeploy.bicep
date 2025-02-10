@@ -6,6 +6,15 @@
 ])
 param storageAccountType string = 'Standard_LRS'
 
+@description('Specifies the Azure Function hosting plan SKU.')
+@allowed([
+  'Y1'
+  'EP1'
+  'EP2'
+  'EP3'
+])
+param functionAppPlanSku string = 'Y1'
+
 @description('Location for all resources.')
 param location string = resourceGroup().location
 
@@ -36,7 +45,6 @@ param alertSeverity string = 'Low, Medium, High'
 var functionAppName = 'VaronisSaaS-${uniqueString(resourceGroup().id)}'
 var functionWorkerRuntime = 'dotnet'
 var functionPlanOS = 'Linux'
-var functionAppPlanSku = 'Y1'
 var packageUri = 'https://raw.githubusercontent.com/Azure/Azure-Sentinel/master/Solutions/VaronisSaaS/Data%20Connectors/Varonis.Sentinel.Functions.zip'
 var linuxFxVersion = 'DOTNET|6.0'
 var hostingPlanName = functionAppName
@@ -44,16 +52,38 @@ var applicationInsightsName = functionAppName
 var storageAccountName = '${uniqueString(resourceGroup().id)}sa'
 var isReserved = ((functionPlanOS == 'Linux') ? true : false)
 
-resource storageAccount 'Microsoft.Storage/storageAccounts@2022-05-01' = {
+resource storageAccount 'Microsoft.Storage/storageAccounts@2019-06-01' = {
   name: storageAccountName
-  location: location
+  location: resourceGroup().location
   sku: {
     name: storageAccountType
   }
-  kind: 'Storage'
+  kind: 'StorageV2'
+  properties: {
+    networkAcls: {
+      bypass: 'AzureServices'
+      virtualNetworkRules: []
+      ipRules: []
+      defaultAction: 'Allow'
+    }
+    supportsHttpsTrafficOnly: true
+    encryption: {
+      services: {
+        file: {
+          keyType: 'Account'
+          enabled: true
+        }
+        blob: {
+          keyType: 'Account'
+          enabled: true
+        }
+      }
+      keySource: 'Microsoft.Storage'
+    }
+  }
 }
 
-resource Microsoft_Web_serverfarms_hostingPlan 'Microsoft.Web/serverfarms@2022-03-01' = {
+resource hostingPlanDynam 'Microsoft.Web/serverfarms@2022-03-01' = if(contains(functionAppPlanSku, 'Y')) {
   name: hostingPlanName
   location: location
   sku: {
@@ -64,6 +94,21 @@ resource Microsoft_Web_serverfarms_hostingPlan 'Microsoft.Web/serverfarms@2022-0
     reserved: isReserved
   }
   kind: (isReserved ? 'linux' : 'windows')
+}
+
+resource hostingPlanPrem 'Microsoft.Web/serverfarms@2022-03-01' = if(contains(functionAppPlanSku, 'EP')) {
+  name: hostingPlanName
+  location: location
+  sku: {
+    tier: 'ElasticPremium'
+    name: functionAppPlanSku
+    family: 'EP'
+  }
+  properties: {
+    maximumElasticWorkerCount: 20
+    reserved: isReserved
+  }
+  kind: 'elastic'
 }
 
 resource applicationInsights 'Microsoft.Insights/components@2020-02-02' = {
@@ -85,8 +130,8 @@ resource functionApp 'Microsoft.Web/sites@2022-03-01' = {
   properties: {
     reserved: isReserved
     serverFarmId: (contains(functionAppPlanSku, 'EP')
-      ? Microsoft_Web_serverfarms_hostingPlan.id
-      : Microsoft_Web_serverfarms_hostingPlan.id)
+      ? hostingPlanPrem.id
+      : hostingPlanDynam.id)
     siteConfig: {
       linuxFxVersion: (isReserved ? linuxFxVersion : null)
       appSettings: [

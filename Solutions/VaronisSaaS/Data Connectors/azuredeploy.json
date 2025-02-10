@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.28.1.47646",
-      "templateHash": "12807419542720902161"
+      "version": "0.32.4.45862",
+      "templateHash": "15773528400875328128"
     }
   },
   "parameters": {
@@ -19,6 +19,19 @@
       ],
       "metadata": {
         "description": "Storage Account type."
+      }
+    },
+    "functionAppPlanSku": {
+      "type": "string",
+      "defaultValue": "Y1",
+      "allowedValues": [
+        "Y1",
+        "EP1",
+        "EP2",
+        "EP3"
+      ],
+      "metadata": {
+        "description": "Specifies the Azure Function hosting plan SKU."
       }
     },
     "location": {
@@ -81,7 +94,6 @@
     "functionAppName": "[format('VaronisSaaS-{0}', uniqueString(resourceGroup().id))]",
     "functionWorkerRuntime": "dotnet",
     "functionPlanOS": "Linux",
-    "functionAppPlanSku": "Y1",
     "packageUri": "https://raw.githubusercontent.com/Azure/Azure-Sentinel/master/Solutions/VaronisSaaS/Data%20Connectors/Varonis.Sentinel.Functions.zip",
     "linuxFxVersion": "DOTNET|6.0",
     "hostingPlanName": "[variables('functionAppName')]",
@@ -92,27 +104,67 @@
   "resources": [
     {
       "type": "Microsoft.Storage/storageAccounts",
-      "apiVersion": "2022-05-01",
+      "apiVersion": "2019-06-01",
       "name": "[variables('storageAccountName')]",
-      "location": "[parameters('location')]",
+      "location": "[resourceGroup().location]",
       "sku": {
         "name": "[parameters('storageAccountType')]"
       },
-      "kind": "Storage"
+      "kind": "StorageV2",
+      "properties": {
+        "networkAcls": {
+          "bypass": "AzureServices",
+          "virtualNetworkRules": [],
+          "ipRules": [],
+          "defaultAction": "Allow"
+        },
+        "supportsHttpsTrafficOnly": true,
+        "encryption": {
+          "services": {
+            "file": {
+              "keyType": "Account",
+              "enabled": true
+            },
+            "blob": {
+              "keyType": "Account",
+              "enabled": true
+            }
+          },
+          "keySource": "Microsoft.Storage"
+        }
+      }
     },
     {
+      "condition": "[contains(parameters('functionAppPlanSku'), 'Y')]",
       "type": "Microsoft.Web/serverfarms",
       "apiVersion": "2022-03-01",
       "name": "[variables('hostingPlanName')]",
       "location": "[parameters('location')]",
       "sku": {
         "tier": "Dynamic",
-        "name": "[variables('functionAppPlanSku')]"
+        "name": "[parameters('functionAppPlanSku')]"
       },
       "properties": {
         "reserved": "[variables('isReserved')]"
       },
       "kind": "[if(variables('isReserved'), 'linux', 'windows')]"
+    },
+    {
+      "condition": "[contains(parameters('functionAppPlanSku'), 'EP')]",
+      "type": "Microsoft.Web/serverfarms",
+      "apiVersion": "2022-03-01",
+      "name": "[variables('hostingPlanName')]",
+      "location": "[parameters('location')]",
+      "sku": {
+        "tier": "ElasticPremium",
+        "name": "[parameters('functionAppPlanSku')]",
+        "family": "EP"
+      },
+      "properties": {
+        "maximumElasticWorkerCount": 20,
+        "reserved": "[variables('isReserved')]"
+      },
+      "kind": "elastic"
     },
     {
       "type": "Microsoft.Insights/components",
@@ -135,7 +187,7 @@
       "kind": "[if(variables('isReserved'), 'functionapp,linux', 'functionapp')]",
       "properties": {
         "reserved": "[variables('isReserved')]",
-        "serverFarmId": "[if(contains(variables('functionAppPlanSku'), 'EP'), resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName')), resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName')))]",
+        "serverFarmId": "[if(contains(parameters('functionAppPlanSku'), 'EP'), resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName')), resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName')))]",
         "siteConfig": {
           "linuxFxVersion": "[if(variables('isReserved'), variables('linuxFxVersion'), null())]",
           "appSettings": [
@@ -145,11 +197,11 @@
             },
             {
               "name": "AzureWebJobsStorage",
-              "value": "[format('DefaultEndpointsProtocol=https;AccountName={0};EndpointSuffix={1};AccountKey={2}', variables('storageAccountName'), environment().suffixes.storage, listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2022-05-01').keys[0].value)]"
+              "value": "[format('DefaultEndpointsProtocol=https;AccountName={0};EndpointSuffix={1};AccountKey={2}', variables('storageAccountName'), environment().suffixes.storage, listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2019-06-01').keys[0].value)]"
             },
             {
               "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
-              "value": "[format('DefaultEndpointsProtocol=https;AccountName={0};EndpointSuffix={1};AccountKey={2}', variables('storageAccountName'), environment().suffixes.storage, listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2022-05-01').keys[0].value)]"
+              "value": "[format('DefaultEndpointsProtocol=https;AccountName={0};EndpointSuffix={1};AccountKey={2}', variables('storageAccountName'), environment().suffixes.storage, listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2019-06-01').keys[0].value)]"
             },
             {
               "name": "WEBSITE_CONTENTSHARE",
@@ -204,6 +256,7 @@
       },
       "dependsOn": [
         "[resourceId('Microsoft.Insights/components', variables('applicationInsightsName'))]",
+        "[resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName'))]",
         "[resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName'))]",
         "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
       ]
